@@ -117,10 +117,13 @@ body.locked{overflow:hidden}
 .creds{font-family:var(--f-display);font-size:17px;line-height:1.35;margin:3px 0 0;opacity:.92}
 .amp{font-family:var(--f-names);font-size:42px;line-height:1;margin:10px 0 0}
 .name.n2{font-size:clamp(40px,11vw,52px);margin-top:2px}
+.name .cap{font-size:1.32em;line-height:0;margin-right:.02em}
 .of{font-family:var(--f-display);font-style:italic;font-size:19px;margin:2px 0 0}
-.scroll-cue{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--f-display);font-weight:600;font-size:12.5px;letter-spacing:.3em;padding-left:.3em;color:var(--cream);opacity:.85}
-.scroll-cue svg{width:16px;height:16px;animation:nudge 1.8s ease-in-out infinite}
-@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+.scroll-cue{position:absolute;left:50%;bottom:calc(66px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:inline-flex;align-items:center;gap:10px;padding:11px 18px 11px 24px;border:1px solid rgba(255,240,205,.95);border-radius:999px;background:linear-gradient(180deg,#FFF3D6 0%,#F1D08C 55%,#D9AE5C 100%);color:#4A1E22;font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:.16em;line-height:1;white-space:nowrap;cursor:pointer;text-shadow:0 1px 0 rgba(255,255,255,.5);box-shadow:0 0 0 0 rgba(241,208,140,.6),0 8px 22px rgba(0,0,0,.45);animation:cuePulse 2.4s ease-out infinite}
+.scroll-cue svg{width:20px;height:20px;flex:none;animation:nudge 1.4s ease-in-out infinite}
+.scroll-cue:focus-visible{outline:2px solid #fff;outline-offset:4px}
+@keyframes nudge{0%,100%{transform:translateY(-2px)}50%{transform:translateY(4px)}}
+@keyframes cuePulse{0%{box-shadow:0 0 0 0 rgba(241,208,140,.65),0 8px 22px rgba(0,0,0,.45)}70%{box-shadow:0 0 0 16px rgba(241,208,140,0),0 8px 22px rgba(0,0,0,.45)}100%{box-shadow:0 0 0 0 rgba(241,208,140,0),0 8px 22px rgba(0,0,0,.45)}}
 .revealed .hero-copy > *{animation:rise 1.1s cubic-bezier(.2,.7,.2,1) both}
 .revealed .hero-copy > :nth-child(1){animation-delay:.25s}
 .revealed .hero-copy > :nth-child(2){animation-delay:.4s}
@@ -255,7 +258,7 @@ body.locked{overflow:hidden}
 .ur .su-invite{font-size:15px;line-height:2}
 .ur .su-date{font-size:16px;line-height:2}
 .ur .tile span{font-size:12px;letter-spacing:0;line-height:1.8}
-.ur .scroll-cue{letter-spacing:0;font-size:13px;padding-left:0}
+.ur .scroll-cue{letter-spacing:0;font-size:16px;line-height:1.6;padding:6px 18px 8px 20px}
 .envelope.ur .seal text{font-size:12px}
 .ur .env-invited span{letter-spacing:0;font-size:19px;padding-left:0;line-height:2}
 .ur .field label{font-size:13.5px;line-height:2}
@@ -288,7 +291,7 @@ body.locked{overflow:hidden}
       <p class="of" data-i18n="cfg.bride.label"></p>
       <p class="name n2" data-i18n="cfg.bride.father"></p>
     </div>
-    <div class="scroll-cue" aria-hidden="true"><span data-i18n="ui.scroll"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></div>
+    <button class="scroll-cue" id="scrollCue" type="button"><span data-i18n="ui.scroll"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l5 5 5-5"/><path d="M7 13l5 5 5-5" opacity=".55"/></svg></button>
   </section>
 
   <!-- Message -->
@@ -516,7 +519,7 @@ const UI = {
   invited: { en: "YOU ARE INVITED", ur: "آپ مدعو ہیں" },
   welcome: { en: ["We are honored to welcome you to", "the wedding ceremony of"], ur: ["ہم آپ کو شادی کی پُرمسرت تقریب", "میں خوش آمدید کہتے ہیں"] },
   amp: { en: "&", ur: "اور" },
-  scroll: { en: "SCROLL", ur: "نیچے دیکھیں" },
+  scroll: { en: "SCROLL DOWN", ur: "نیچے دیکھیں" },
   scratchTitle: { en: "Scratch to Reveal", ur: "کھرچ کر دیکھیں" },
   foreverBegins: { en: "Our forever begins", ur: "ہمیشہ کے سفر کا آغاز" },
   scratchHint: { en: "Scratch the heart to reveal our date", ur: "تاریخ دیکھنے کے لیے دل کو کھرچیں" },
@@ -586,6 +589,7 @@ const UI = {
       const v = pick(get(el.dataset.i18n));
       if (v == null) return;
       if (Array.isArray(v)) el.innerHTML = v.map(esc).join('<br>');
+      else if (lang === 'en' && el.classList.contains('name')) el.innerHTML = esc(v).replace(/(^|\s)([A-Z])/g, '$1<span class="cap">$2</span>');
       else el.textContent = v;
     });
     document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = pick(get(el.dataset.i18nPh)) || ''; });
@@ -1027,6 +1031,7 @@ const UI = {
     setTimeout(finish, 2800);
   }
   $('#seal').addEventListener('click', openInvite);
+  $('#scrollCue').addEventListener('click', () => { const m = document.querySelector('.message'); if (m) m.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); });
 
   /* ---------- boot ---------- */
   document.body.classList.add('locked');
