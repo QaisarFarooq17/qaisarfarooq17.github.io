@@ -183,6 +183,9 @@ body.locked{overflow:hidden}
 .tile b{display:block;font-family:var(--f-serif);font-weight:600;font-size:27px;line-height:1.1;color:var(--wine);font-variant-numeric:tabular-nums}
 .tile span{display:block;margin-top:4px;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}
 .count-note{font-family:var(--f-display);font-style:italic;font-size:17px;color:var(--ink-soft);margin:14px 0 0}
+.count-until{font-family:var(--f-display);font-style:italic;font-size:17px;line-height:1.45;color:var(--ink-soft);margin:16px auto 0;max-width:30ch;text-wrap:balance}
+.tile b.flip{animation:flip .45s cubic-bezier(.2,.7,.2,1)}
+@keyframes flip{0%{transform:translateY(-7px);opacity:.25}100%{transform:none;opacity:1}}
 
 /* timeline */
 .tl{list-style:none;margin:0 auto;padding:0;max-width:330px;text-align:start;position:relative;padding-inline-start:28px}
@@ -337,6 +340,7 @@ body.locked{overflow:hidden}
       <div class="tile"><b id="cd-m">00</b><span data-i18n="ui.minutes"></span></div>
       <div class="tile"><b id="cd-s">00</b><span data-i18n="ui.seconds"></span></div>
     </div>
+    <p class="count-until" data-i18n="ui.countUntil"></p>
     <p class="count-note" id="countNote" data-i18n="ui.todayIsTheDay" hidden></p>
   </section>
 
@@ -527,6 +531,7 @@ const UI = {
   countdown: { en: "Counting Down to Forever", ur: "مبارک گھڑی کا انتظار" },
   days: { en: "Days", ur: "دن" }, hours: { en: "Hours", ur: "گھنٹے" }, minutes: { en: "Minutes", ur: "منٹ" }, seconds: { en: "Seconds", ur: "سیکنڈ" },
   todayIsTheDay: { en: "The big day is here!", ur: "آج خوشی کا دن ہے!" },
+  countUntil: { en: ["until Sunday, 22 November", "12:00 PM, Pakistan time"], ur: "اتوار 22 نومبر، دوپہر 12 بجے (پاکستانی وقت) تک" },
   barat: { en: "The Walima", ur: "ولیمہ" },
   timeline: { en: "Program Timeline", ur: "تقریب کا پروگرام" },
   venue: { en: "Venue", ur: "مقام" },
@@ -907,12 +912,16 @@ const UI = {
   /* ---------- countdown ---------- */
   const target = Date.parse(CONFIG.event.iso);
   const pad = n => String(n).padStart(2, '0');
+  function setTile(id, v) {
+    const el = $(id); if (el.textContent === v) return;
+    el.textContent = v; el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip');
+  }
   function tick() {
     const t = target - Date.now(), z = Math.max(0, t);
-    $('#cd-d').textContent = pad(Math.floor(z / 864e5));
-    $('#cd-h').textContent = pad(Math.floor(z / 36e5) % 24);
-    $('#cd-m').textContent = pad(Math.floor(z / 6e4) % 60);
-    $('#cd-s').textContent = pad(Math.floor(z / 1e3) % 60);
+    setTile('#cd-d', pad(Math.floor(z / 864e5)));
+    setTile('#cd-h', pad(Math.floor(z / 36e5) % 24));
+    setTile('#cd-m', pad(Math.floor(z / 6e4) % 60));
+    setTile('#cd-s', pad(Math.floor(z / 1e3) % 60));
     $('#countNote').hidden = t > 0;
   }
   tick(); setInterval(tick, 1000);
