@@ -223,8 +223,14 @@ body.locked{overflow:hidden}
 .wave{display:block;width:230px;max-width:100%;height:24px;margin:0 auto;color:var(--wine);opacity:.45}
 .closing .sec-title{font-size:34px;margin:22px auto 4px;max-width:14ch}
 .closing .names{font-family:var(--f-names);font-size:38px;line-height:1.2;color:var(--ink);margin:12px auto 18px;max-width:11ch;text-wrap:balance}
-.kin{list-style:none;margin:20px auto 0;padding:0;max-width:330px;font-size:16.5px;line-height:1.75;color:var(--ink)}
-.kin li span{color:var(--ink-soft);font-style:italic}
+.kin{display:grid;grid-template-columns:1fr 1fr;margin:24px auto 0;max-width:440px;color:var(--ink)}
+@media (max-width:480px){.kin{margin-inline:-14px}}
+.kcol{padding:2px 6px 4px}
+.kcol+.kcol{border-inline-start:1px solid rgba(140,47,63,.28)}
+.kcol h3{font-family:var(--f-script);font-style:italic;font-weight:500;font-size:clamp(19px,5.4vw,23px);line-height:1.2;color:var(--wine);margin:0 0 10px;white-space:nowrap}
+.kcol ul{list-style:none;margin:0;padding:0;font-size:clamp(13px,3.75vw,15.5px);line-height:1.4}
+.kcol li{margin:0 0 7px;text-wrap:balance}
+.kcol li.fam{font-style:italic;color:var(--ink-soft)}
 
 /* floating controls */
 .fab{position:fixed;z-index:200;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--wine);font-family:var(--f-serif);font-size:13.5px;cursor:pointer;box-shadow:0 2px 12px rgba(60,20,30,.14)}
@@ -265,8 +271,12 @@ body.locked{overflow:hidden}
 .ur .env-invited span{letter-spacing:0;font-size:19px;padding-left:0;line-height:2}
 .ur .btn,.ur .scratch-hint,.ur .count-note{font-family:var(--f-urdu);font-style:normal;line-height:2}
 .ur .closing .names{font-family:var(--f-urdu);font-size:24px;line-height:2;max-width:none}
-.ur .kin{font-family:var(--f-urdu);font-size:16px;line-height:2.3}
-.ur .kin li span{font-style:normal}
+.ur .kin{font-family:var(--f-urdu)}
+.ur .kcol h3{font-family:var(--f-urdu);font-style:normal;font-weight:600;font-size:21px;white-space:normal;line-height:2;margin-bottom:4px}
+.ur .kcol ul{font-size:15px;line-height:2.1}
+.ur .kin{margin-inline:auto}
+.ur .kcol li{margin-bottom:2px}
+.ur .kcol li.fam{font-style:normal}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -390,7 +400,7 @@ body.locked{overflow:hidden}
     <h2 class="sec-title" data-i18n="ui.closing"></h2>
     <p class="names" data-i18n="cfg.couple"></p>
     <svg class="wave" viewBox="0 0 230 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" aria-hidden="true"><path d="M2 12c18 10 36 10 54 0s36-10 54 0M120 12c18 10 36 10 54 0s36-10 54 0"/></svg>
-    <ul class="kin" id="kin"></ul>
+    <div class="kin" id="kin"></div>
   </section>
 </div>
 
@@ -483,17 +493,14 @@ const CONFIG = {
     maps:    "https://share.google/iaLVhLQyBopuPhD9q"
   },
   gifts: { en: "Your presence and prayers are the greatest gift of all.", ur: "آپ کی شرکت اور دعائیں ہی ہمارے لیے سب سے قیمتی تحفہ ہیں۔" },
-  kin: [                                // listed under "& Family" at the end: [name, relation]
-    { en: ["Dr. Ashfaq Ahmad", "Brother"],    ur: ["ڈاکٹر اشفاق احمد", "بھائی"] },
-    { en: ["Mr. Khaleeq Ahmad", "Brother"],   ur: ["جناب خلیق احمد", "بھائی"] },
-    { en: ["Mr. Saeed Ahmad", "Brother"],     ur: ["جناب سعید احمد", "بھائی"] },
-    { en: ["Mr. Muhammad Iqbal", "Uncle"],    ur: ["جناب محمد اقبال", "چچا"] },
-    { en: ["Mr. Jan Muhammad", "Mamoo"],      ur: ["جناب جان محمد", "ماموں"] },
-    { en: ["Mr. Naik Muhammad", "Mamoo"],     ur: ["جناب نیک محمد", "ماموں"] },
-    { en: ["Mr. Fazal Subhan", "Mamoo"],      ur: ["جناب فضل سبحان", "ماموں"] },
-    { en: ["Mr. Tahir Muhammad", "Cousin"],   ur: ["جناب طاہر محمد", "کزن"] },
-    { en: ["Dr. Shafeeq Ahmad", "Cousin"],    ur: ["ڈاکٹر شفیق احمد", "کزن"] },
-    { en: ["Mr. Irshad Ahmad", ""],           ur: ["جناب ارشاد احمد", ""] }
+  kin: [                                // two columns at the end: heading, names, closing line
+    { head: { en: "Looking Forward", ur: "چشم براہ" },
+      names: { en: ["Mr. Muhammad Siddiq", "Mr. Muhammad Iqbal", "Mr. Jan Muhammad", "Mr. Naik Muhammad"],
+               ur: ["جناب محمد صدیق", "جناب محمد اقبال", "جناب جان محمد", "جناب نیک محمد"] } },
+    { head: { en: "RSVP", ur: "عرض گزار" },
+      names: { en: ["Dr. Ashfaq Ahmad", "Mr. Khaleeq Ahmad", "Mr. Sajid Ahmad", "Mr. Saeed Ahmad"],
+               ur: ["ڈاکٹر اشفاق احمد", "جناب خلیق احمد", "جناب ساجد احمد", "جناب سعید احمد"] },
+      tail: { en: "and Family", ur: "اور اہلِ خانہ" } }
   ],
   photo: "",                            // optional: image URL to show instead of the monogram wreath
   video: "invitation-v4.mp4",           // optional: video file shown in place of the wreath
@@ -573,7 +580,7 @@ const UI = {
       else if (lang === 'en' && el.classList.contains('name')) el.innerHTML = esc(v).replace(/(^|\s)([A-Z])/g, '$1<span class="cap">$2</span>');
       else el.textContent = v;
     });
-    $('#kin').innerHTML = CONFIG.kin.map(k => { const [n, r] = k[lang] || k.en; return `<li>${esc(n)}${r ? ` <span>(${esc(r)})</span>` : ''}</li>`; }).join('');
+    $('#kin').innerHTML = CONFIG.kin.map(c => `<div class="kcol"><h3>${esc(pick(c.head))}</h3><ul>${(c.names[lang] || c.names.en).map(n => `<li>${esc(n)}</li>`).join('')}${c.tail ? `<li class="fam">${esc(pick(c.tail))}</li>` : ''}</ul></div>`).join('');
     $('#langLbl').textContent = pick(UI.lang);
     $('#langLbl').className = lang === 'en' ? 'lbl-ur' : '';
     $('#langBtn').setAttribute('aria-label', lang === 'en' ? 'Switch to Urdu' : 'Switch to English');
